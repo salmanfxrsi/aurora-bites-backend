@@ -21,11 +21,17 @@ async function run() {
     const menuCollection = client.db("aurora-bites").collection("menu");
     const reviewsCollection = client.db("aurora-bites").collection("reviews");
 
-    // get menu from db
+    // get menu and specific category from db
     app.get("/menu", async (req, res) => {
       const limit = Number(req.query.limit);
+      const category = req.query.category;
+      let query = {};
 
-      const result = await menuCollection.find().limit(limit).toArray();
+      if (category) {
+        query = { category };
+      }
+
+      const result = await menuCollection.find(query).limit(limit).toArray();
       res.send(result);
     });
 
