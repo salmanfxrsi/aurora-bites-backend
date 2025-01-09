@@ -19,24 +19,44 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const menuCollection = client.db("aurora-bites").collection("menu");
+    const userCollection = client.db("aurora-bites").collection("users");
     const reviewsCollection = client.db("aurora-bites").collection("reviews");
     const cartCollection = client.db("aurora-bites").collection("carts");
 
+    // user related api
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/users", async (req, res) => {
+      const userInfo = req.body;
+      const result = await userCollection.insertOne(userInfo);
+      res.send(result);
+    });
+
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // cart related api
-    app.get("/carts", async (req, res) => {
+    app.get("/cart", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
       const result = await cartCollection.find(query).toArray();
       res.send(result);
     });
 
-    app.post("/carts", async (req, res) => {
+    app.post("/cart", async (req, res) => {
       const foodInfo = req.body;
       const result = await cartCollection.insertOne(foodInfo);
       res.send(result);
     });
 
-    app.delete("/carts/:id", async (req, res) => {
+    app.delete("/cart/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await cartCollection.deleteOne(query);
