@@ -31,6 +31,16 @@ async function run() {
 
     app.post("/users", async (req, res) => {
       const userInfo = req.body;
+      const email = userInfo.email;
+      const query = { email: email };
+
+      // check is user already exist or not
+      const isExist = await userCollection.findOne(query);
+
+      if(isExist){
+        return res.send({ message: "user already exist", insertedId: null })
+      }
+
       const result = await userCollection.insertOne(userInfo);
       res.send(result);
     });
