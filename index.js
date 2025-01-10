@@ -37,11 +37,23 @@ async function run() {
       // check is user already exist or not
       const isExist = await userCollection.findOne(query);
 
-      if(isExist){
-        return res.send({ message: "user already exist", insertedId: null })
+      if (isExist) {
+        return res.send({ message: "user already exist", insertedId: null });
       }
 
       const result = await userCollection.insertOne(userInfo);
+      res.send(result);
+    });
+
+    app.patch("users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedInfo = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedInfo);
       res.send(result);
     });
 
